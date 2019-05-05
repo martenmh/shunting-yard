@@ -16,7 +16,6 @@ struct operatorStruct{
 };
 struct formula{
     string formulaString;
-    //string output;
     queue<char> output;
     stack<operatorStruct> operatorStack;
 
@@ -37,40 +36,56 @@ struct formula{
             Foreach character in the formula check what type of operator it is and push it in the operatorStack, 
             if it is an operand push it in the operandStack.
         */
-
+       int addedPresedence = 0;
         for(char& c : formulaString){
             
             switch(c){
 
 
                 case '+':
-                    presedenceCheck(2);
-                    operatorStack.push(operatorStruct('+', 2));
+                    presedenceCheck(2 + addedPresedence);
+                    operatorStack.push(operatorStruct('+', 2 + addedPresedence));
                     break;
 
 
                 case '-':
-                    presedenceCheck(2);
-                    operatorStack.push(operatorStruct('-', 2));
+                    presedenceCheck(2  + addedPresedence);
+                    operatorStack.push(operatorStruct('-', 2 + addedPresedence));
                     break;
 
 
                 case '/':
-                    presedenceCheck(3);
-                    operatorStack.push(operatorStruct('/', 3));
+                    presedenceCheck(3 + addedPresedence);
+                    operatorStack.push(operatorStruct('/', 3 + addedPresedence));
                     break;
 
-
                 case '*':
-                    presedenceCheck(3);
-                    operatorStack.push(operatorStruct('*', 3));
+                    presedenceCheck(3 + addedPresedence);
+                    operatorStack.push(operatorStruct('*', 3 + addedPresedence));
                     break;
                     
 
                 case '^':
-                    operatorStack.push(operatorStruct('^', 4));
+                    operatorStack.push(operatorStruct('^', 4 + addedPresedence));
                     break;
+                
+                case '(':
+                    operatorStack.push(operatorStruct('(', 5));
+                    addedPresedence = 4;
+                    break;
+                case ')':
+                
+                    while(!operatorStack.empty() && operatorStack.top().operatorChar != '('){
+                        output.push(operatorStack.top().operatorChar);
+                        operatorStack.pop();
+                    }
                     
+                    operatorStack.pop();
+
+                    
+                    addedPresedence = 0;
+                    break;
+
                 default:
                     output.push(c);
                     break;
@@ -90,10 +105,13 @@ struct formula{
 };
 
 int main(){
+    cout << "Formula: ";
+    string formulass;
+    cin >> formulass;
+    formula userFormula = formula(formulass);
     
-    formula userFormula = formula("3+4*2/4^2^3-5");
-    
-    cout << userFormula.formulaString << endl;
+    cout << "You entered: " << userFormula.formulaString << endl;
+    cout << "Result: ";
     while(!userFormula.output.empty()){
         cout << userFormula.output.front();    
         userFormula.output.pop();
